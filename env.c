@@ -1,7 +1,6 @@
-#include <stdarg.h>
-#include <stdio.h>
+#include "shell.h"
 
-int custom_snprintf(char *buffer, size_t size, const char *format, ...) {
+int _snprintf(char *buffer, size_t size, const char *format, ...) {
 				if (!buffer || !format || size == 0) {
 								return -1;  // Invalid input
 				}
