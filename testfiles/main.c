@@ -26,14 +26,15 @@ int main(void) {
         /* Remove newline character from the input */
         buf[strcspn(buf, "\n")] = '\0';
 
-        /* Parse line and check command here */
+        /* Parse line and check wcommand here */
         cmd = tokenize(buf, " \t\n");
 
         if (cmd[0] != NULL) {
             // Check if the command exists in PATH
             char *path = getenv("PATH");
             path_token = strtok(path, ":");
-            
+            printf ( "PATH: %s\n", path);
+            printf ( "PATH_TOKEN: %s\n", path_token);
 
             int commandExecuted = 0; // Flag to check if a command has been executed
 
@@ -45,7 +46,7 @@ int main(void) {
 
                 // Check if the command is executable
                 if (access(full_path, X_OK) == 0) {
-                    
+                    printf("BEFORE PID");
                     /* Creates a new process */
                     pid = fork();
                             printf("pid is: %d\n", pid);
@@ -54,10 +55,13 @@ int main(void) {
                         perror("Failed to fork");
                         return 1;
                     } else if (pid == 0) {
+                        printf("BEFORE EXECVE\n");
                         /* Execute this part in the child process */
                         exec_status = execve(full_path, cmd, environ);
+                        printf("AFTER EXECVE\n");
 
                         if (exec_status == -1) {
+                            
                             perror("execve");
                             exit(EXIT_FAILURE);  // Exit with an error status
                         }
@@ -65,6 +69,7 @@ int main(void) {
                     } else {
                         /* Execute this part in the parent process (shell) */
                         waitpid(pid, &status, 0);
+                        printf("Waiting now");
                         commandExecuted = 1; // Set the flag to true
                         break;  // Break from the loop after waiting for the child process
                     // 
