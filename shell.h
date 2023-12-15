@@ -1,25 +1,41 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <stdarg.h>
-#include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-/* for breaking input into tokens */
+#include <signal.h>
+
+#define TRUE 1
+#define FALSE 0
+
+typedef struct program{
+	char **tokens;
+	char *command_name;
+} program;
+
 char **tokenize(char *str, char *delim);
-/* for formatting the token to be used in execve */
-int _snprintf(char *buffer, size_t size, const char *format, ...);
-/* for getting the path of the command */
-char* _getenv(const char* var_name);
-/* for executing the command */
+void handle_signal(int);
+void handle_signal2(int);
+char *in_path(char *);
+int _strcmp(const char *s1, const char *s2);
+int built_exit(program *data, int exit_int);
 
-/*int execute_command(char** cmd);*/
+void setup_shell(char **buf, size_t *n);
+int handle_input(char **buf, size_t *n, program *data, int *count, int *exit_int);
+pid_t create_process(char ***cmd);
+void process_input(char *buf, program *data, int *count);
+void execute_process(pid_t pid, int *status, char **cmd);
+void free_and_error(char **cmd, const char *error_message);
+void execute_child_process(char ***cmd, char **full_path);
 
-/* holds a pointer to an array of strings ending with a null character */
+
+
 extern char **environ;
 
 #endif
